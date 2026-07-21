@@ -68,4 +68,18 @@ public class ApprovalController {
         approvalService.deleteDocument(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * 6. 결재 문서 수정 (기안자 본인만, 첫 결재 전까지만)
+     * @param id 문서 ID
+     * @param drafterId 기안자 사번 (실제로는 JWT Token에서 추출)
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ApprovalDto.Response> updateDocument(
+            @PathVariable Long id,
+            @RequestParam Long drafterId,
+            @RequestBody ApprovalDto.UpdateRequest request) {
+        ApprovalDto.Response response = approvalService.updateDocument(id, drafterId, request);
+        return ResponseEntity.ok(response);
+    }
 }

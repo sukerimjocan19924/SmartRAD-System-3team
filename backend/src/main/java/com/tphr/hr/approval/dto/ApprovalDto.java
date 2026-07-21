@@ -25,6 +25,15 @@ public class ApprovalDto {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateRequest {
+        private String title;
+        private String content; // JSON string or HTML text
+    }
+
+    @Getter
+    @Builder
     public static class Response {
         private Long id;
         private String docNumber;

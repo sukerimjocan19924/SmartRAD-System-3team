@@ -196,6 +196,34 @@ public class ApprovalService {
         approvalDocumentRepository.delete(document);
     }
 
+    /**
+     * 6. 결재 문서 수정 (제목 및 내용)
+     */
+    @Transactional
+    public ApprovalDto.Response updateDocument(Long documentId, Long drafterId, ApprovalDto.UpdateRequest request) {
+        ApprovalDocument document = approvalDocumentRepository.findById(documentId)
+                .orElseThrow(() -> new IllegalArgumentException("문서를 찾을 수 없습니다."));
+
+        if (!document.getDraftedBy().getId().equals(drafterId)) {
+            throw new IllegalStateException("기안자 본인만 문서를 수정할 수 있습니다.");
+        }
+
+        if ("REJECTED".equals(document.getStatus())) {
+            throw new IllegalStateException("반려된 문서는 수정할 수 없습니다.");
+        }
+        if ("COMPLETED".equals(document.getStatus())) {
+            throw new IllegalStateException("결재가 완료된 문서는 수정할 수 없습니다.");
+        }
+
+        List<ApprovalLine> lines = approvalLineRepository.findByDocumentIdOrderBySequenceAsc(documentId);
+        if (!lines.isEmpty() && "APPROVED".equals(lines.get(0).getStatus())) {
+            throw new IllegalStateException("이미 결재가 진행된 문서는 수정할 수 없습니다.");
+        }
+
+        document.updateDocument(request.getTitle(), request.getContent());
+        return mapToResponse(document);
+    }
+
     // --- Helper Methods ---
 
     private ApprovalDto.Response mapToResponse(ApprovalDocument doc) {

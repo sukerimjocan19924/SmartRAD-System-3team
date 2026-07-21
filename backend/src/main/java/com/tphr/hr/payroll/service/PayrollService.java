@@ -63,8 +63,8 @@ public class PayrollService {
             Optional<PayrollRecord> optionalRecord = payrollRecordRepository.findByEmployeeIdAndPayrollYearAndPayrollMonth(employee.getId(), year, month);
             if (optionalRecord.isPresent()) {
                 PayrollRecord existingRecord = optionalRecord.get();
-                if ("CONFIRMED".equals(existingRecord.getStatus())) {
-                    log.info("Employee {} payroll for {}/{} is already CONFIRMED. Skipping recalculation.", employee.getId(), year, month);
+                if ("CONFIRMED".equals(existingRecord.getStatus()) || "MANUAL".equals(existingRecord.getStatus())) {
+                    log.info("Employee {} payroll for {}/{} is already {}. Skipping recalculation.", employee.getId(), year, month, existingRecord.getStatus());
                     calculatedRecords.add(existingRecord);
                     continue;
                 }
@@ -140,6 +140,72 @@ public class PayrollService {
         
         payrollDetailRepository.deleteByPayrollRecordId(record.getId());
         payrollRecordRepository.delete(record);
+    }
+
+    /**
+     * 특정 사원의 특정 월 급여를 수동으로 단건 추가(생성)합니다.
+     */
+    @Transactional
+    public PayrollDto.Response createManualPayroll(PayrollDto.ManualRequest request) {
+        Employee employee = employeeRepository.findById(request.getEmployeeId())
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+
+        Optional<PayrollRecord> optionalRecord = payrollRecordRepository.findByEmployeeIdAndPayrollYearAndPayrollMonth(
+                employee.getId(), request.getYear(), request.getMonth());
+
+        if (optionalRecord.isPresent()) {
+            throw new IllegalStateException("해당 연/월의 급여 대장이 이미 존재합니다. 수정 기능을 이용해주세요.");
+        }
+
+        PayrollRecord record = PayrollRecord.builder()
+                .employee(employee)
+                .payrollYear(request.getYear())
+                .payrollMonth(request.getMonth())
+                .baseSalary(request.getBaseSalary())
+                .totalAllowance(request.getTotalAllowance())
+                .totalDeduction(request.getTotalDeduction())
+                .netPay(request.getNetPay())
+                .status("MANUAL")
+                .build();
+        
+        PayrollRecord savedRecord = payrollRecordRepository.save(record);
+        
+        // 수동 생성 시 세부 내역은 단순 묶음으로 추가 (필요 시 더 디테일하게 입력받도록 확장 가능)
+        List<PayrollDetail> details = List.of(
+                PayrollDetail.builder().payrollRecord(savedRecord).itemType("ALLOWANCE").itemName("수동 수당 입력").amount(request.getTotalAllowance()).build(),
+                PayrollDetail.builder().payrollRecord(savedRecord).itemType("DEDUCTION").itemName("수동 공제 입력").amount(request.getTotalDeduction()).build()
+        );
+        payrollDetailRepository.saveAll(details);
+
+        return mapToResponse(savedRecord);
+    }
+
+    /**
+     * 특정 급여 대장의 금액을 수동으로 수정합니다.
+     */
+    @Transactional
+    public PayrollDto.Response updatePayroll(Long recordId, PayrollDto.ManualRequest request) {
+        PayrollRecord record = payrollRecordRepository.findById(recordId)
+                .orElseThrow(() -> new IllegalArgumentException("Payroll record not found"));
+
+        if ("CONFIRMED".equals(record.getStatus())) {
+            throw new IllegalStateException("이미 확정된 급여 대장은 수정할 수 없습니다.");
+        }
+
+        record.updateCalculation(request.getBaseSalary(), request.getTotalAllowance(), request.getTotalDeduction(), request.getNetPay());
+        record.markAsManual();
+        PayrollRecord savedRecord = payrollRecordRepository.save(record);
+
+        payrollDetailRepository.deleteByPayrollRecordId(savedRecord.getId());
+        payrollDetailRepository.flush();
+
+        List<PayrollDetail> details = List.of(
+                PayrollDetail.builder().payrollRecord(savedRecord).itemType("ALLOWANCE").itemName("수동 수당 업데이트").amount(request.getTotalAllowance()).build(),
+                PayrollDetail.builder().payrollRecord(savedRecord).itemType("DEDUCTION").itemName("수동 공제 업데이트").amount(request.getTotalDeduction()).build()
+        );
+        payrollDetailRepository.saveAll(details);
+
+        return mapToResponse(savedRecord);
     }
 
     /**

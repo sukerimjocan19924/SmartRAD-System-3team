@@ -42,4 +42,9 @@ public class ApprovalDocument extends BaseEntity {
     public void updateStatus(String newStatus) {
         this.status = newStatus;
     }
+
+    public void updateDocument(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

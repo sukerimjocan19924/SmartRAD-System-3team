@@ -73,4 +73,25 @@ public class PayrollController {
         payrollService.deletePayroll(recordId);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * 5. 특정 직원 급여 수동 추가 (생성)
+     */
+    @PostMapping("/manual")
+    public ResponseEntity<PayrollDto.Response> createManualPayroll(
+            @RequestBody PayrollDto.ManualRequest request) {
+        PayrollDto.Response response = payrollService.createManualPayroll(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 6. 특정 급여 대장 수동 금액 수정
+     */
+    @PutMapping("/{recordId}")
+    public ResponseEntity<PayrollDto.Response> updatePayroll(
+            @PathVariable Long recordId,
+            @RequestBody PayrollDto.ManualRequest request) {
+        PayrollDto.Response response = payrollService.updatePayroll(recordId, request);
+        return ResponseEntity.ok(response);
+    }
 }
