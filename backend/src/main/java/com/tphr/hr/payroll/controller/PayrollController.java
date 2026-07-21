@@ -63,4 +63,14 @@ public class PayrollController {
         PayrollDto.RecordWithDetailsResponse response = payrollService.getPayrollDetails(employeeId, year, month);
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * 4. 특정 급여 대장 삭제 (단, 확정된 급여는 삭제 불가)
+     * @param recordId 급여 마스터(Record) ID
+     */
+    @DeleteMapping("/{recordId}")
+    public ResponseEntity<Void> deletePayroll(@PathVariable Long recordId) {
+        payrollService.deletePayroll(recordId);
+        return ResponseEntity.noContent().build();
+    }
 }

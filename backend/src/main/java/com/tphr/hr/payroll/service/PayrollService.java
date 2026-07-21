@@ -127,6 +127,22 @@ public class PayrollService {
     }
 
     /**
+     * 특정 급여 대장을 삭제합니다.
+     */
+    @Transactional
+    public void deletePayroll(Long recordId) {
+        PayrollRecord record = payrollRecordRepository.findById(recordId)
+                .orElseThrow(() -> new IllegalArgumentException("Payroll record not found"));
+        
+        if ("CONFIRMED".equals(record.getStatus())) {
+            throw new IllegalStateException("Cannot delete a confirmed payroll record.");
+        }
+        
+        payrollDetailRepository.deleteByPayrollRecordId(record.getId());
+        payrollRecordRepository.delete(record);
+    }
+
+    /**
      * 특정 사원의 급여 명세서 상세 조회
      */
     @Transactional(readOnly = true)
