@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
         source: "/common-codes",
         destination: `${backendUrl}/common-codes`,
       },
+      {
+        source: "/api-system/:path*",
+        destination: `${backendUrl}/:path*`,
+      },
     ];
   },
 };
