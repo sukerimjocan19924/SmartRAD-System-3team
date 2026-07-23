@@ -20,21 +20,39 @@ export default function PayrollProcessingPage() {
 
   const fetchSummary = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/${targetYear}/${targetMonth}/summary`);
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/${targetYear}/${targetMonth}/summary`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+      });
       if (res.ok) setSummary(await res.json());
     } catch (e) { console.error(e); }
   };
 
   const fetchPayrollList = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/${targetYear}/${targetMonth}`);
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/${targetYear}/${targetMonth}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+      });
       if (res.ok) setPayrollList(await res.json());
     } catch (e) { console.error(e); }
   };
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/history?year=${targetYear}`);
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/history?year=${targetYear}`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         // Transform data for chart
@@ -57,8 +75,13 @@ export default function PayrollProcessingPage() {
 
   const handleCalculate = async () => {
     try {
+      const token = localStorage.getItem("accessToken");
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/${targetYear}/${targetMonth}/calculate`, {
-        method: "POST"
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        }
       });
       if (res.ok) {
         alert("급여 계산이 완료되었습니다.");
