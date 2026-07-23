@@ -94,25 +94,47 @@ export default function DashboardSidebar() {
     }
   }, []);
 
+  // 1. 먼저 각 페이지 여부 계산
   const isDashboardPage = pathname === "/dashboard";
-
   const isApprovalInboxPage = pathname.startsWith("/dashboard/approvals");
-
   const isDraftDocumentsPage = pathname.startsWith("/dashboard/drafts");
+  const isEmployeePage = pathname.startsWith("/dashboard/employees");
+  const isOrganizationPage = pathname.startsWith("/dashboard/organization"); // ← 여기
+  const isAppointmentPage = pathname.startsWith("/dashboard/appointments");
+  const isDutyPage = pathname.startsWith("/dashboard/duty");
+  const isAttendanceLinkPage = pathname.startsWith(
+    "/dashboard/attendance-link",
+  );
+  const isAttendancePage =
+    pathname.startsWith("/dashboard/attendance") &&
+    !pathname.startsWith("/dashboard/attendance-link");
+  const isLeavePage = pathname.startsWith("/dashboard/leave");
 
+  // 2. 그 다음에 조합해서 사용
   const isApprovalRoute = isApprovalInboxPage || isDraftDocumentsPage;
+  const isEmployeeRoute =
+    isEmployeePage ||
+    isOrganizationPage ||
+    isAppointmentPage ||
+    isDutyPage ||
+    isAttendancePage ||
+    isAttendanceLinkPage; // ← 이제 사용 가능
 
   const isCommonCodePage = pathname.startsWith("/dashboard/system/common-code");
   const isSystemRoute = pathname.startsWith("/dashboard/system");
+  const isRoleGroupPage = pathname.startsWith("/dashboard/system/roles");
 
   const isPayrollInfoPage = pathname.startsWith("/dashboard/payroll/info");
   const isPayrollProcessingPage = pathname.startsWith("/dashboard/payroll/processing");
   const isPayrollStatutoryPage = pathname.startsWith("/dashboard/statutory");
   const isPayrollRoute = isPayrollInfoPage || isPayrollProcessingPage || isPayrollStatutoryPage;
 
+  // 3. state
   const [isApprovalOpen, setIsApprovalOpen] = useState(isApprovalRoute);
+  const [isEmployeeOpen, setIsEmployeeOpen] = useState(isEmployeeRoute);
   const [isSystemOpen, setIsSystemOpen] = useState(isSystemRoute);
   const [isPayrollOpen, setIsPayrollOpen] = useState(isPayrollRoute);
+
 
   // When pathname changes (navigation happens), 
   // ensure the active route's menu is open and others are closed.
@@ -135,6 +157,10 @@ export default function DashboardSidebar() {
   useEffect(() => {
     setIsPayrollOpen(isPayrollRoute);
   }, [isPayrollRoute]);
+
+  useEffect(() => {
+    setIsEmployeeOpen(isEmployeeRoute);
+  }, [isEmployeeRoute]);
 
   return (
     <aside className={styles.sidebar}>
@@ -217,14 +243,85 @@ export default function DashboardSidebar() {
         </div>
 
         {/* 인사관리 */}
-        <button type="button" className={styles.sideLink}>
-          <span className={styles.iconBox}>
-            <SidebarIcon name="employee" />
-          </span>
+        <div className={styles.menuGroup}>
+          <button
+            type="button"
+            className={`${styles.sideLink} ${
+              isEmployeeRoute || isEmployeeOpen ? styles.groupActive : ""
+            }`}
+            onClick={() => setIsEmployeeOpen((prev) => !prev)}
+            aria-expanded={isEmployeeOpen}
+          >
+            <span className={styles.iconBox}>
+              <SidebarIcon name="employee" />
+            </span>
+            <span className={styles.menuLabel}>인사관리</span>
+            <span
+              className={`${styles.arrow} ${isEmployeeOpen ? styles.arrowOpen : ""}`}
+              aria-hidden="true"
+            >
+              ⌄
+            </span>
+          </button>
 
-          <span className={styles.menuLabel}>인사관리</span>
-          <span className={styles.arrow}>⌄</span>
-        </button>
+          <div
+            className={`${styles.subMenu} ${isEmployeeOpen ? styles.subMenuOpen : ""}`}
+          >
+            <Link
+              href="/dashboard/employees"
+              className={isEmployeePage ? styles.subMenuActive : ""}
+              aria-current={isEmployeePage ? "page" : undefined}
+            >
+              직원관리
+            </Link>
+
+            <Link
+              href="/dashboard/organization"
+              className={isOrganizationPage ? styles.subMenuActive : ""}
+              aria-current={isOrganizationPage ? "page" : undefined}
+            >
+              조직관리
+            </Link>
+
+            <Link
+              href="/dashboard/appointments"
+              className={isAppointmentPage ? styles.subMenuActive : ""}
+              aria-current={isAppointmentPage ? "page" : undefined}
+            >
+              인사발령 관리
+            </Link>
+
+            <Link
+              href="/dashboard/duty"
+              className={isDutyPage ? styles.subMenuActive : ""}
+              aria-current={isDutyPage ? "page" : undefined}
+            >
+              듀티표 편성
+            </Link>
+
+            <Link
+              href="/dashboard/attendance"
+              className={isAttendancePage ? styles.subMenuActive : ""}
+              aria-current={isAttendancePage ? "page" : undefined}
+            >
+              출퇴근 관리
+            </Link>
+
+            <Link
+              href="/dashboard/attendance-link"
+              className={isAttendanceLinkPage ? styles.subMenuActive : ""}
+            >
+              근태 연동
+            </Link>
+
+            <Link
+              href="/dashboard/leave"
+              className={isLeavePage ? styles.subMenuActive : ""}
+            >
+              휴가 관리
+            </Link>
+          </div>
+        </div>
 
         {/* 급여관리 */}
         <div className={styles.menuGroup}>

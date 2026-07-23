@@ -5,6 +5,8 @@ import type {
   AccountStatusUpdateRequest,
   EmployeeCreateRequest,
 } from "@/types/employee";
+import { employeeMockData } from "@/data/dashboard/employeeMockData";
+import type { EmployeeManagementData } from "@/types/employee";
 
 export interface AccountIssueResponse {
   empNo: string;
@@ -116,4 +118,28 @@ export async function createEmployee(request: EmployeeCreateRequest): Promise<vo
   if (!response.ok) {
     throw new Error("Failed to create employee");
   }
+}
+
+const useMockData = process.env.USE_EMPLOYEE_MOCK_DATA !== "false";
+const employeeApiPath = process.env.EMPLOYEE_API_PATH ?? "/api/v1/employees";
+
+export async function getEmployeeManagementData(): Promise<EmployeeManagementData> {
+  if (useMockData) {
+    return employeeMockData;
+  }
+
+  const response = await fetch(
+    employeeApiPath,
+    {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(`직원 목록 조회 실패: ${response.status}`);
+  }
+
+  return response.json();
 }
