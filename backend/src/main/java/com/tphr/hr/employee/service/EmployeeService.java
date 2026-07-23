@@ -122,6 +122,7 @@ public class EmployeeService {
                 getCommonCodeOrNull(request.payrollTypeCode()),
                 request.payrollDate(),
                 request.bankAccount(),
+                request.bankName(),
                 getCommonCodeOrNull(request.taxTypeCode()),
                 roleGroup,
                 request.isShiftWorker()

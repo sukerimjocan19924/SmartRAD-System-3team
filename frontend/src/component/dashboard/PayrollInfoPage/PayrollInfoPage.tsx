@@ -22,6 +22,9 @@ export default function PayrollInfoPage() {
   const [deductions, setDeductions] = useState<any[]>([]);
   const [minWage, setMinWage] = useState<any>(null);
 
+  const [deductionPage, setDeductionPage] = useState(1);
+  const DEDUCTIONS_PER_PAGE = 6;
+
   // Modal states
   const [isDeductionAddOpen, setIsDeductionAddOpen] = useState(false);
   const [editingDeduction, setEditingDeduction] = useState<any>(null);
@@ -55,6 +58,19 @@ export default function PayrollInfoPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const totalDeductionPages = Math.ceil(deductions.length / DEDUCTIONS_PER_PAGE);
+  
+  useEffect(() => {
+    if (deductionPage > totalDeductionPages) {
+      setDeductionPage(Math.max(1, totalDeductionPages));
+    }
+  }, [totalDeductionPages, deductionPage]);
+
+  const currentDeductions = deductions.slice(
+    (deductionPage - 1) * DEDUCTIONS_PER_PAGE,
+    deductionPage * DEDUCTIONS_PER_PAGE
+  );
 
   const taxableAllowances = allowances.filter(a => a.taxType === "과세" || a.type === "과세");
   const nonTaxableAllowances = allowances.filter(a => a.taxType === "비과세" || a.type === "비과세");
@@ -236,7 +252,7 @@ export default function PayrollInfoPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {deductions.length > 0 ? deductions.map((item, idx) => (
+                      {currentDeductions.length > 0 ? currentDeductions.map((item, idx) => (
                         <tr key={idx}>
                           <td>{item.name}</td>
                           <td>
@@ -263,6 +279,19 @@ export default function PayrollInfoPage() {
                       )}
                     </tbody>
                   </table>
+                  {totalDeductionPages > 1 && (
+                    <div className={styles.pagination}>
+                      {Array.from({ length: totalDeductionPages }).map((_, i) => (
+                        <button
+                          key={i}
+                          className={`${styles.pageBtn} ${deductionPage === i + 1 ? styles.active : ""}`}
+                          onClick={() => setDeductionPage(i + 1)}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
