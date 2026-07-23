@@ -324,10 +324,10 @@ export default function DashboardSidebar() {
                 }`}
               >
                 <Link
-                  href="/dashboard/system/user-permission"
+                  href="/dashboard/system/roles"
                   prefetch={false}
                   className={`${styles.subMenuItem} ${
-                    pathname === "/dashboard/system/user-permission"
+                    pathname === "/dashboard/system/roles"
                       ? styles.subMenuActive
                       : ""
                   }`}
