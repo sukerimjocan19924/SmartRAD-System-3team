@@ -107,7 +107,7 @@ export default function DashboardSidebar() {
 
   const isPayrollInfoPage = pathname.startsWith("/dashboard/payroll/info");
   const isPayrollProcessingPage = pathname.startsWith("/dashboard/payroll/processing");
-  const isPayrollStatutoryPage = pathname.startsWith("/dashboard/payroll/statutory");
+  const isPayrollStatutoryPage = pathname.startsWith("/dashboard/statutory");
   const isPayrollRoute = isPayrollInfoPage || isPayrollProcessingPage || isPayrollStatutoryPage;
 
   const [isApprovalOpen, setIsApprovalOpen] = useState(isApprovalRoute);
@@ -131,6 +131,10 @@ export default function DashboardSidebar() {
       setIsSystemOpen(false);
     }
   }, [pathname]);
+
+  useEffect(() => {
+    setIsPayrollOpen(isPayrollRoute);
+  }, [isPayrollRoute]);
 
   return (
     <aside className={styles.sidebar}>
@@ -273,7 +277,7 @@ export default function DashboardSidebar() {
             </Link>
 
             <Link
-              href="/dashboard/payroll/statutory"
+              href="/dashboard/statutory"
               className={isPayrollStatutoryPage ? styles.subMenuActive : ""}
               aria-current={isPayrollStatutoryPage ? "page" : undefined}
             >
