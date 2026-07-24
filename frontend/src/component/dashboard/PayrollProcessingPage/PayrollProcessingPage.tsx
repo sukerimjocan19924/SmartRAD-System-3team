@@ -21,7 +21,7 @@ export default function PayrollProcessingPage() {
   const fetchSummary = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/${targetYear}/${targetMonth}/summary`, {
+      const res = await fetch(`/api/v1/payroll/${targetYear}/${targetMonth}/summary`, {
         headers: {
           "Content-Type": "application/json",
           ...(token ? { "Authorization": `Bearer ${token}` } : {})
@@ -34,7 +34,7 @@ export default function PayrollProcessingPage() {
   const fetchPayrollList = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/${targetYear}/${targetMonth}`, {
+      const res = await fetch(`/api/v1/payroll/${targetYear}/${targetMonth}`, {
         headers: {
           "Content-Type": "application/json",
           ...(token ? { "Authorization": `Bearer ${token}` } : {})
@@ -47,7 +47,7 @@ export default function PayrollProcessingPage() {
   const fetchHistory = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/history?year=${targetYear}`, {
+      const res = await fetch(`/api/v1/payroll/history?year=${targetYear}`, {
         headers: {
           "Content-Type": "application/json",
           ...(token ? { "Authorization": `Bearer ${token}` } : {})
@@ -76,7 +76,7 @@ export default function PayrollProcessingPage() {
   const handleCalculate = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/payroll/${targetYear}/${targetMonth}/calculate`, {
+      const res = await fetch(`/api/v1/payroll/${targetYear}/${targetMonth}/calculate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
