@@ -2,8 +2,15 @@
 
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import {
+  getEmployees,
+  updateEmployeeRole,
+  updateAccountStatus,
+  issueAccount,
+  deleteEmployees,
+  createEmployeeDetailed,
+} from "@/services/employeeService";
 import DashboardSidebar from "@/component/dashboard/DashboardSidebar/DashboardSidebar";
-import { createEmployee } from "@/services/employeeService";
 import type { EmployeeManagementData } from "@/types/employee";
 import styles from "./EmployeeManagementPage.module.scss";
 import AddressSearchModal from "./AddressSearchModal";
@@ -101,7 +108,7 @@ export default function EmployeeManagementPage({ initialData }: Props) {
     setFormError("");
 
     try {
-      await createEmployee({
+      await createEmployeeDetailed({
         empNo: form.empNo.trim(),
         name: form.name.trim(),
         email: form.email || undefined,

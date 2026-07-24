@@ -23,10 +23,11 @@ import {
   updateEmployeeRole,
   updateAccountStatus,
   issueAccount,
-  createEmployee,
+  createEmployeeDetailed,
   deleteEmployees,
+  CreateEmployeeRequest,
 } from "@/services/employeeService";
-import type { EmployeeSummaryResponse, EmployeeCreateRequest } from "@/types/employee";
+import type { EmployeeSummaryResponse } from "@/types/employee";
 
 import {
   Search,
@@ -132,12 +133,12 @@ export default function RoleManagementPage() {
 
   // 직원 초대 모달 State
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [newEmployee, setNewEmployee] = useState<EmployeeCreateRequest>({
+  const [newEmployee, setNewEmployee] = useState<CreateEmployeeRequest>({
     empNo: "",
     name: "",
     email: "",
     joinDate: new Date().toISOString().split("T")[0],
-    departmentId: undefined,
+    departmentId: 0,
     roleGroupId: undefined,
   });
 
@@ -265,7 +266,11 @@ export default function RoleManagementPage() {
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createEmployee(newEmployee);
+      if (newEmployee.departmentId === 0) {
+        alert("부서를 선택해주세요.");
+        return;
+      }
+      await createEmployeeDetailed(newEmployee as CreateEmployeeRequest);
       alert("새 직원이 초대(등록)되었습니다.");
       setIsInviteModalOpen(false);
       setNewEmployee({
@@ -273,7 +278,7 @@ export default function RoleManagementPage() {
         name: "",
         email: "",
         joinDate: new Date().toISOString().split("T")[0],
-        departmentId: undefined,
+        departmentId: 0,
         roleGroupId: undefined,
       });
       loadEmployees();
@@ -790,6 +795,19 @@ export default function RoleManagementPage() {
                     value={newEmployee.joinDate} 
                     onChange={e => setNewEmployee({...newEmployee, joinDate: e.target.value})} 
                   />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>부서 *</label>
+                  <select
+                    required
+                    value={newEmployee.departmentId || ""}
+                    onChange={e => setNewEmployee({...newEmployee, departmentId: Number(e.target.value)})}
+                  >
+                    <option value="" disabled>부서 선택</option>
+                    {departments.map(dept => (
+                      <option key={dept.id} value={dept.id}>{dept.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className={styles.formGroup}>
                   <label>권한 그룹</label>
