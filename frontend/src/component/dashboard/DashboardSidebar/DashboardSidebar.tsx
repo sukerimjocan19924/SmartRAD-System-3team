@@ -140,28 +140,28 @@ export default function DashboardSidebar() {
   // When pathname changes (navigation happens), 
   // ensure the active route's menu is open and others are closed.
   useEffect(() => {
-    if (isApprovalRoute) {
+    if (isEmployeeRoute) {
+      setIsEmployeeOpen(true);
+      setIsApprovalOpen(false);
+      setIsSystemOpen(false);
+      setIsPayrollOpen(false);
+    } else if (isApprovalRoute) {
       setIsApprovalOpen(true);
+      setIsEmployeeOpen(false);
       setIsSystemOpen(false);
       setIsPayrollOpen(false);
     } else if (isSystemRoute) {
       setIsSystemOpen(true);
       setIsApprovalOpen(false);
+      setIsEmployeeOpen(false);
       setIsPayrollOpen(false);
     } else if (isPayrollRoute) {
       setIsPayrollOpen(true);
       setIsApprovalOpen(false);
+      setIsEmployeeOpen(false);
       setIsSystemOpen(false);
     }
   }, [pathname]);
-
-  useEffect(() => {
-    setIsPayrollOpen(isPayrollRoute);
-  }, [isPayrollRoute]);
-
-  useEffect(() => {
-    setIsEmployeeOpen(isEmployeeRoute);
-  }, [isEmployeeRoute]);
 
   return (
     <aside className={styles.sidebar}>
