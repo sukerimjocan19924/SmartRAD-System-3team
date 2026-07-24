@@ -118,7 +118,8 @@ export default function DashboardSidebar() {
     isAppointmentPage ||
     isDutyPage ||
     isAttendancePage ||
-    isAttendanceLinkPage; // ← 이제 사용 가능
+    isLeavePage ||
+    isAttendanceLinkPage;
 
   const isCommonCodePage = pathname.startsWith("/dashboard/system/common-code");
   const isSystemRoute = pathname.startsWith("/dashboard/system");

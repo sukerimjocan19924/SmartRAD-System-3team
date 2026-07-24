@@ -2,8 +2,8 @@
 
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import DashboardSidebar from "@/component/dashboard/DashboardSidebar/DashboardSidebar";
-import DashboardHeader from "@/component/dashboard/DashboardHeader/DashboardHeader";
+
+
 import {
   CreateEmployeeRequest,
   createEmployeeDetailed,
@@ -133,12 +133,7 @@ export default function EmployeeCreatePage() {
   };
 
   return (
-    <div className={styles.dashboard}>
-      <DashboardSidebar />
-      <div className={styles.pageArea}>
-        <DashboardHeader />
-
-        <main className={styles.main}>
+    <main className={styles.main}>
           <div className={styles.pageHeader}>
             <div>
               <h1>직원 추가</h1>
@@ -480,7 +475,5 @@ export default function EmployeeCreatePage() {
             </div>
           </form>
         </main>
-      </div>
-    </div>
   );
 }
