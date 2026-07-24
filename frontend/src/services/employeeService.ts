@@ -174,8 +174,8 @@ export interface CreateEmployeeRequest {
   roleGroupId?: number;
 }
 
-/** 직원 등록 */
-export async function createEmployee(
+/** 직원 등록 (상세) */
+export async function createEmployeeDetailed(
   payload: CreateEmployeeRequest,
 ): Promise<{ id: number; empNo?: string }> {
   if (!backendApiUrl) {

@@ -4,7 +4,10 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import DashboardSidebar from "@/component/dashboard/DashboardSidebar/DashboardSidebar";
 import DashboardHeader from "@/component/dashboard/DashboardHeader/DashboardHeader";
-import { createEmployee } from "@/services/employeeService";
+import {
+  CreateEmployeeRequest,
+  createEmployeeDetailed,
+} from "@/services/employeeService";
 import styles from "./EmployeeCreatePage.module.scss";
 
 type FormState = {
@@ -92,7 +95,7 @@ export default function EmployeeCreatePage() {
     setError("");
 
     try {
-      await createEmployee({
+      await createEmployeeDetailed({
         empNo: form.empNo.trim(),
         name: form.name.trim(),
         email: form.email || undefined,
@@ -133,7 +136,7 @@ export default function EmployeeCreatePage() {
     <div className={styles.dashboard}>
       <DashboardSidebar />
       <div className={styles.pageArea}>
-        <DashboardHeader showNotification />
+        <DashboardHeader />
 
         <main className={styles.main}>
           <div className={styles.pageHeader}>
